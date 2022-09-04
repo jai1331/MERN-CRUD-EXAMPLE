@@ -1,21 +1,28 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Switch, Redirect, Route } from 'react-router';
-import { BrowserRouter, Link } from 'react-router-dom';
+import {
+    BrowserRouter,
+    Routes,
+    Route,
+  } from "react-router-dom";
 
 import Login from './Login';
 import Register from './Register';
 import Dashboard from './Dashboard';
 import './Login.css';
+import HOCForRouterProps from "./HOCForRouterProps";
 
-ReactDOM.render(
-    <BrowserRouter>
-        <Switch>
-            <Route exact path='/' component={Login} />
-            <Route exact path='/register' component={Register} />
-            <Route path='/dashboard' component={Dashboard} />
-            {/* <Route component={NotFound}/> */}
-        </Switch>
-    </BrowserRouter>,
+const root = ReactDOM.createRoot(document.getElementById("root"));
+
+root.render(
+    <React.StrictMode>
+        <BrowserRouter>
+            <Routes>
+                <Route exact path='/' element={<HOCForRouterProps Component={Login} />} />
+                <Route exact path='/register' element={<HOCForRouterProps Component={Register} />} />
+                <Route path='/dashboard' element={<HOCForRouterProps Component={Dashboard} />} />
+            </Routes>
+        </BrowserRouter>
+    </React.StrictMode>,
     document.getElementById('root')
 );

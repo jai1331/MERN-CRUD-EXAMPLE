@@ -3,8 +3,9 @@ import {
   Button, TextField, Dialog, DialogActions, LinearProgress,
   DialogTitle, DialogContent, TableBody, Table,
   TableContainer, TableHead, TableRow, TableCell
-} from '@material-ui/core';
-import { Pagination } from '@material-ui/lab';
+} from '@mui/material';
+// import { Pagination } from '@material-ui/lab';
+import Pagination from '@mui/material/Pagination';
 import swal from 'sweetalert';
 const axios = require('axios');
 
@@ -17,9 +18,9 @@ export default class Dashboard extends Component {
       openProductEditModal: false,
       id: '',
       name: '',
-      desc: '',
-      price: '',
-      discount: '',
+      address: '',
+      contactDetails: '',
+      bankDetails: '',
       file: '',
       fileName: '',
       page: 1,
@@ -33,7 +34,7 @@ export default class Dashboard extends Component {
   componentDidMount = () => {
     let token = localStorage.getItem('token');
     if (!token) {
-      this.props.history.push('/login');
+      this.props.navigate.push('/login');
     } else {
       this.setState({ token: token }, () => {
         this.getProduct();
@@ -102,7 +103,7 @@ export default class Dashboard extends Component {
 
   logOut = () => {
     localStorage.setItem('token', null);
-    this.props.history.push('/');
+    this.props.navigate("/");
   }
 
   onChange = (e) => {
@@ -122,9 +123,9 @@ export default class Dashboard extends Component {
     const file = new FormData();
     file.append('file', fileInput.files[0]);
     file.append('name', this.state.name);
-    file.append('desc', this.state.desc);
-    file.append('discount', this.state.discount);
-    file.append('price', this.state.price);
+    file.append('address', this.state.address);
+    file.append('bankDetails', this.state.bankDetails);
+    file.append('contactDetails', this.state.contactDetails);
 
     axios.post('http://localhost:2000/add-product', file, {
       headers: {
@@ -140,7 +141,7 @@ export default class Dashboard extends Component {
       });
 
       this.handleProductClose();
-      this.setState({ name: '', desc: '', discount: '', price: '', file: null, page: 1 }, () => {
+      this.setState({ name: '', address: '', bankDetails: '', contactDetails: '', file: null, page: 1 }, () => {
         this.getProduct();
       });
     }).catch((err) => {
@@ -160,9 +161,9 @@ export default class Dashboard extends Component {
     file.append('id', this.state.id);
     file.append('file', fileInput.files[0]);
     file.append('name', this.state.name);
-    file.append('desc', this.state.desc);
-    file.append('discount', this.state.discount);
-    file.append('price', this.state.price);
+    file.append('address', this.state.address);
+    file.append('bankDetails', this.state.bankDetails);
+    file.append('contactDetails', this.state.contactDetails);
 
     axios.post('http://localhost:2000/update-product', file, {
       headers: {
@@ -178,7 +179,7 @@ export default class Dashboard extends Component {
       });
 
       this.handleProductEditClose();
-      this.setState({ name: '', desc: '', discount: '', price: '', file: null }, () => {
+      this.setState({ name: '', address: '', bankDetails: '', contactDetails: '', file: null }, () => {
         this.getProduct();
       });
     }).catch((err) => {
@@ -197,9 +198,9 @@ export default class Dashboard extends Component {
       openProductModal: true,
       id: '',
       name: '',
-      desc: '',
-      price: '',
-      discount: '',
+      address: '',
+      contactDetails: '',
+      bankDetails: '',
       fileName: ''
     });
   };
@@ -213,9 +214,9 @@ export default class Dashboard extends Component {
       openProductEditModal: true,
       id: data._id,
       name: data.name,
-      desc: data.desc,
-      price: data.price,
-      discount: data.discount,
+      address: data.address,
+      contactDetails: data.contactDetails,
+      bankDetails: data.bankDetails,
       fileName: data.image
     });
   };
@@ -229,7 +230,7 @@ export default class Dashboard extends Component {
       <div>
         {this.state.loading && <LinearProgress size={40} />}
         <div>
-          <h2>Dashboard</h2>
+          <h2>Vendor Management</h2>
           <Button
             className="button_style"
             variant="contained"
@@ -237,7 +238,7 @@ export default class Dashboard extends Component {
             size="small"
             onClick={this.handleProductOpen}
           >
-            Add Product
+            Add Vendor
           </Button>
           <Button
             className="button_style"
@@ -258,7 +259,7 @@ export default class Dashboard extends Component {
           fullWidth={true}
           maxWidth = {'md'}
         >
-          <DialogTitle id="alert-dialog-title">Edit Product</DialogTitle>
+          <DialogTitle id="alert-dialog-title">Edit Vendor</DialogTitle>
           <DialogContent>
             <TextField
               id="standard-basic"
@@ -267,43 +268,44 @@ export default class Dashboard extends Component {
               name="name"
               value={this.state.name}
               onChange={this.onChange}
-              placeholder="Product Name"
+              placeholder="Vendor Name"
               required
             /><br />
             <TextField
               id="standard-basic"
-              type="text"
+              multiline
+              maxRows={4}
               autoComplete="off"
-              name="desc"
-              value={this.state.desc}
+              name="address"
+              value={this.state.address}
               onChange={this.onChange}
-              placeholder="Description"
+              placeholder="Address"
               required
             /><br />
             <TextField
               id="standard-basic"
-              type="number"
+              // type="number"
               autoComplete="off"
-              name="price"
-              value={this.state.price}
+              name="contactDetails"
+              value={this.state.contactDetails}
               onChange={this.onChange}
-              placeholder="Price"
+              placeholder="Contact Details"
               required
             /><br />
             <TextField
               id="standard-basic"
-              type="number"
+              // type="number"
               autoComplete="off"
-              name="discount"
-              value={this.state.discount}
+              name="bankDetails"
+              value={this.state.bankDetails}
               onChange={this.onChange}
-              placeholder="Discount"
+              placeholder="Bank Details"
               required
             /><br /><br />
             <Button
               variant="contained"
               component="label"
-            > Upload
+            > Vendor Logo
             <input
                 id="standard-basic"
                 type="file"
@@ -324,9 +326,9 @@ export default class Dashboard extends Component {
               Cancel
             </Button>
             <Button
-              disabled={this.state.name == '' || this.state.desc == '' || this.state.discount == '' || this.state.price == ''}
+              disabled={this.state.name == '' || this.state.address == '' || this.state.bankDetails == '' || this.state.contactDetails == ''}
               onClick={(e) => this.updateProduct()} color="primary" autoFocus>
-              Edit Product
+              Update
             </Button>
           </DialogActions>
         </Dialog>
@@ -340,7 +342,7 @@ export default class Dashboard extends Component {
           fullWidth={true}
           maxWidth = {'md'}
         >
-          <DialogTitle id="alert-dialog-title">Add Product</DialogTitle>
+          <DialogTitle id="alert-dialog-title">Add Vendor</DialogTitle>
           <DialogContent>
             <TextField
               id="standard-basic"
@@ -349,43 +351,45 @@ export default class Dashboard extends Component {
               name="name"
               value={this.state.name}
               onChange={this.onChange}
-              placeholder="Product Name"
+              placeholder="Vendor Name"
               required
             /><br />
             <TextField
               id="standard-basic"
-              type="text"
+              multiline
+              maxRows={4}
               autoComplete="off"
-              name="desc"
-              value={this.state.desc}
+              name="address"
+              value={this.state.address}
               onChange={this.onChange}
-              placeholder="Description"
+              placeholder="Address"
               required
             /><br />
             <TextField
               id="standard-basic"
-              type="number"
+              // type="number"
               autoComplete="off"
-              name="price"
-              value={this.state.price}
+              name="contactDetails"
+              value={this.state.contactDetails}
               onChange={this.onChange}
-              placeholder="Price"
+              placeholder="Contact Details"
               required
             /><br />
             <TextField
               id="standard-basic"
-              type="number"
+              multiline
+              maxRows={4}
               autoComplete="off"
-              name="discount"
-              value={this.state.discount}
+              name="bankDetails"
+              value={this.state.bankDetails}
               onChange={this.onChange}
-              placeholder="Discount"
+              placeholder="Bank Details"
               required
             /><br /><br />
             <Button
               variant="contained"
               component="label"
-            > Upload
+            > Vendor Logo
             <input
                 id="standard-basic"
                 type="file"
@@ -407,9 +411,9 @@ export default class Dashboard extends Component {
               Cancel
             </Button>
             <Button
-              disabled={this.state.name == '' || this.state.desc == '' || this.state.discount == '' || this.state.price == '' || this.state.file == null}
+              disabled={this.state.name == '' || this.state.address == '' || this.state.bankDetails == '' || this.state.contactDetails == '' || this.state.file == null}
               onClick={(e) => this.addProduct()} color="primary" autoFocus>
-              Add Product
+              Add
             </Button>
           </DialogActions>
         </Dialog>
@@ -424,18 +428,18 @@ export default class Dashboard extends Component {
             name="search"
             value={this.state.search}
             onChange={this.onChange}
-            placeholder="Search by product name"
+            placeholder="Search by vendor name"
             required
             
           />
           <Table aria-label="simple table">
             <TableHead>
               <TableRow>
-                <TableCell align="center">Name</TableCell>
-                <TableCell align="center">Image</TableCell>
-                <TableCell align="center">Description</TableCell>
-                <TableCell align="center">Price</TableCell>
-                <TableCell align="center">Discount</TableCell>
+                <TableCell align="center">Vendor Name</TableCell>
+                <TableCell align="center">Vendor Logo</TableCell>
+                <TableCell align="center">Address</TableCell>
+                <TableCell align="center">Contact Details</TableCell>
+                <TableCell align="center">Bank Details</TableCell>
                 <TableCell align="center">Action</TableCell>
               </TableRow>
             </TableHead>
@@ -446,9 +450,9 @@ export default class Dashboard extends Component {
                     {row.name}
                   </TableCell>
                   <TableCell align="center"><img src={`http://localhost:2000/${row.image}`} width="70" height="70" /></TableCell>
-                  <TableCell align="center">{row.desc}</TableCell>
-                  <TableCell align="center">{row.price}</TableCell>
-                  <TableCell align="center">{row.discount}</TableCell>
+                  <TableCell align="center">{row.address}</TableCell>
+                  <TableCell align="center">{row.contactDetails}</TableCell>
+                  <TableCell align="center">{row.bankDetails}</TableCell>
                   <TableCell align="center">
                     <Button
                       className="button_style"

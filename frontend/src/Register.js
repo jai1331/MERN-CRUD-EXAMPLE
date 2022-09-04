@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import swal from 'sweetalert';
-import { Button, TextField, Link } from '@material-ui/core';
+// import { Button, TextField, Link } from '@material-ui/core';
+import { TextField, Button, Link } from '@mui/material';
 const axios = require('axios');
 
 export default class Register extends React.Component {
   constructor(props) {
+    super(props);
     this.state = {
       username: '',
       password: '',
