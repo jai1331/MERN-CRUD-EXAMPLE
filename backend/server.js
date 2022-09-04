@@ -1,19 +1,19 @@
-var express = require("express");
-var app = express();
+let express = require("express");
+let app = express();
 const bcrypt = require('bcrypt');
-var jwt = require('jsonwebtoken');
-var cors = require('cors');
-var multer = require('multer'),
+let jwt = require('jsonwebtoken');
+let cors = require('cors');
+let multer = require('multer'),
   bodyParser = require('body-parser'),
   path = require('path');
-var mongoose = require("mongoose");
+let mongoose = require("mongoose");
 mongoose.connect("mongodb://localhost/productsMongoDB");
-var fs = require('fs');
-var product = require("./model/product.js");
-var user = require("./model/user.js");
+let fs = require('fs');
+let product = require("./model/product.js");
+let user = require("./model/user.js");
 
-var dir = './uploads';
-var upload = multer({
+let dir = './uploads';
+let upload = multer({
   storage: multer.diskStorage({
 
     destination: function (req, file, callback) {
@@ -185,15 +185,15 @@ function checkUserAndGenerateToken(data, req, res) {
 app.post("/add-product", upload.any(), (req, res) => {
   // console.log(req)
   try {
-    if (req.body && req.body.name && req.body.desc && req.body.price &&
-      req.body.discount) {
+    if (req.body && req.body.name && req.body.address && req.body.bankDetails &&
+      req.body.contactDetails) {
 
       let new_product = new product();
       new_product.name = req.body.name;
-      new_product.desc = req.body.desc;
-      new_product.price = req.body.price;
+      new_product.address = req.body.address;
+      new_product.bankDetails = req.body.bankDetails;
       new_product.image = req.files.length ? req.files[0].filename : '';
-      new_product.discount = req.body.discount;
+      new_product.contactDetails = req.body.contactDetails;
       new_product.user_id = req.user.id;
       new_product.save((err, data) => {
         if (err) {
@@ -204,7 +204,7 @@ app.post("/add-product", upload.any(), (req, res) => {
         } else {
           res.status(200).json({
             status: true,
-            title: 'Product Added successfully.'
+            title: 'Vendor details Added successfully.'
           });
         }
       });
@@ -226,8 +226,8 @@ app.post("/add-product", upload.any(), (req, res) => {
 /* Api to update Product */
 app.post("/update-product", upload.any(), (req, res) => {
   try {
-    if (req.files && req.body && req.body.name && req.body.desc && req.body.price &&
-      req.body.id && req.body.discount) {
+    if (req.body && req.body.name && req.body.address && req.body.bankDetails &&
+      req.body.id && req.body.contactDetails) {
 
       product.findById(req.body.id, (err, new_product) => {
 
@@ -243,14 +243,14 @@ app.post("/update-product", upload.any(), (req, res) => {
         if (req.body.name) {
           new_product.name = req.body.name;
         }
-        if (req.body.desc) {
-          new_product.desc = req.body.desc;
+        if (req.body.address) {
+          new_product.address = req.body.address;
         }
-        if (req.body.price) {
-          new_product.price = req.body.price;
+        if (req.body.contactDetails) {
+          new_product.contactDetails = req.body.contactDetails;
         }
-        if (req.body.discount) {
-          new_product.discount = req.body.discount;
+        if (req.body.bankDetails) {
+          new_product.bankDetails = req.body.bankDetails;
         }
 
         new_product.save((err, data) => {
@@ -262,7 +262,7 @@ app.post("/update-product", upload.any(), (req, res) => {
           } else {
             res.status(200).json({
               status: true,
-              title: 'Product updated.'
+              title: 'Vendor details updated.'
             });
           }
         });
@@ -291,7 +291,7 @@ app.post("/delete-product", (req, res) => {
         if (data.is_delete) {
           res.status(200).json({
             status: true,
-            title: 'Product deleted.'
+            title: 'Selected vendor deleted.'
           });
         } else {
           res.status(400).json({
@@ -330,7 +330,7 @@ app.get("/get-product", (req, res) => {
     }
     var perPage = 5;
     var page = req.query.page || 1;
-    product.find(query, { date: 1, name: 1, id: 1, desc: 1, price: 1, discount: 1, image: 1 })
+    product.find(query, { date: 1, name: 1, id: 1, address: 1, bankDetails: 1, contactDetails: 1, image: 1 })
       .skip((perPage * page) - perPage).limit(perPage)
       .then((data) => {
         product.find(query).count()
@@ -339,7 +339,7 @@ app.get("/get-product", (req, res) => {
             if (data && data.length > 0) {
               res.status(200).json({
                 status: true,
-                title: 'Product retrived.',
+                title: 'Vendor details retrived.',
                 products: data,
                 current_page: page,
                 total: count,
@@ -347,7 +347,7 @@ app.get("/get-product", (req, res) => {
               });
             } else {
               res.status(400).json({
-                errorMessage: 'There is no product!',
+                errorMessage: 'There is no vendor available!',
                 status: false
               });
             }
